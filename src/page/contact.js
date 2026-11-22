@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 
 const SERVICE_ID =
-  import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_xwo9gva";
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  process.env.REACT_APP_EMAILJS_SERVICE_ID || "service_xwo9gva";
+const TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID ||"template_7d2xrm6";
+const PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "EC2xFUU6cXQ7A6Y1i";
 
 const EMAIL = "ramkrishno265@gmail.com";
 const PHONE = "01778934396";
