@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 
-// Formspree/EmailJS er endpoint ekhane boshao, e.g. "https://formspree.io/f/xxxxxx"
-// Khali thakle form shudhu demo hishebe success dekhabe, message kothao jabe na.
-const FORM_ENDPOINT = "";
+const SERVICE_ID =
+  import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_xwo9gva";
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 const EMAIL = "ramkrishno265@gmail.com";
 const PHONE = "01778934396";
 
-// Element viewport-e ashle true hoy (ekbar-i)
 function useInView(threshold = 0.2) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
@@ -142,7 +143,7 @@ function Contact() {
     email: "",
     message: "",
   });
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [status, setStatus] = useState("idle");
   const [lineRef, lineInView] = useInView(0.5);
 
   const MAX = 500;
@@ -163,23 +164,27 @@ function Contact() {
       return;
     }
 
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      setStatus("error");
+      return;
+    }
+
     setStatus("sending");
 
     try {
-      if (FORM_ENDPOINT) {
-        const res = await fetch(FORM_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-        if (!res.ok) throw new Error("Request failed");
-      } else {
-        // Demo mode: shudhu loading dekhay
-        await new Promise((resolve) => setTimeout(resolve, 900));
-      }
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+          time: new Date().toLocaleString(),
+        },
+        {
+          publicKey: PUBLIC_KEY,
+        }
+      );
 
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
@@ -259,7 +264,6 @@ function Contact() {
         }
       `}</style>
 
-      {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
         <div className="contact-blob absolute -left-24 top-10 w-96 h-96 rounded-full bg-blue-200/30 blur-3xl" />
         <div
@@ -270,7 +274,6 @@ function Contact() {
       </div>
 
       <div className="relative max-w-6xl mx-auto px-6">
-        {/* Heading */}
         <Reveal className="text-center max-w-2xl mx-auto mb-14">
           <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">
             Get In Touch
@@ -291,7 +294,6 @@ function Contact() {
         </Reveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left: direct contact */}
           <Reveal direction="left" className="lg:col-span-5">
             <div className="bg-white p-7 sm:p-8 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:shadow-blue-600/5 transition-shadow duration-500 space-y-6">
               <div>
@@ -363,7 +365,6 @@ function Contact() {
             </div>
           </Reveal>
 
-          {/* Right: form */}
           <Reveal direction="right" delay={150} className="lg:col-span-7">
             <div className="bg-white p-7 sm:p-8 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:shadow-blue-600/5 transition-shadow duration-500">
               {status === "success" && (
